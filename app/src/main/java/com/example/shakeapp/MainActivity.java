@@ -35,7 +35,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Referera till UI-komponenterna i layouten
         imageView = findViewById(R.id.imageView);
         textView = findViewById(R.id.textView);
        button = findViewById(R.id.button);
@@ -57,7 +56,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         });
     }
 
-    // Hanterar sensordata och uppdaterar UI-komponenter baserat på sensorhändelser.
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
 
@@ -101,8 +99,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
+    // Avgör om en skakning har detekterats baserat på sensordatan
+    private boolean isShakeDetected(float x, float y, float z) {
+        float threshold = 13f; // Värdet för skakningströskeln
 
-    // Beräknar och returnerar den genomsnittliga rotationsvinkeln baserat på sensordata för X- och Y-axlarna
+        if (Math.abs(x) > threshold || Math.abs(y) > threshold || Math.abs(z) > threshold) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
     private float calculateRotation(float x, float y) {
 
         float maxRotationDegrees = 3.0f;
@@ -115,8 +123,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // Returnera den totala rotationsvinkeln
         return (rotationX + rotationY) / 2;
     }
+    private int calculateBackgroundColor(float x, float y, float z) {
+        int red = (int) (255 * (x + 1) / 2);
+        int green = (int) (255 * (y + 1) / 2);
+        int blue = (int) (255 * (z + 1) / 2);
 
-    // Avregistrera lyssnare när appen går i pausläge
+        return Color.rgb(red, green, blue);
+    }
+
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -124,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         sensorManager.unregisterListener(this, humiditySensor);
     }
 
-    // Registrera lyssnare igen när appen återupptas
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -133,26 +148,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     }
 
-
-    // Avgör om en skakning har detekterats baserat på sensordatan
-    private boolean isShakeDetected(float x, float y, float z) {
-        float threshold = 13f; // Värdet för skakningströskeln
-
-        if (Math.abs(x) > threshold || Math.abs(y) > threshold || Math.abs(z) > threshold) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    // Beräknar en bakgrundsfärg baserat på sensordatan
-    private int calculateBackgroundColor(float x, float y, float z) {
-        int red = (int) (255 * (x + 1) / 2);
-        int green = (int) (255 * (y + 1) / 2);
-        int blue = (int) (255 * (z + 1) / 2);
-
-        return Color.rgb(red, green, blue);
-    }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
